@@ -6,10 +6,18 @@ import com.apt612.depaybackend.model.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 public class ItemDaoImpl implements ItemDao {
-    @Autowired
+
     ItemRepository itemRepository;
+
+    @Autowired
+    public ItemDaoImpl(ItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
+    }
 
     @Override
     public Item getItemById(String id) {
@@ -22,12 +30,17 @@ public class ItemDaoImpl implements ItemDao {
     }
 
     @Override
-    public Item deleteItem(String id){
-        Item item =  itemRepository.findById(id).orElse(null);
-        if(item != null){
+    public Item deleteItem(String id) {
+        Item item = itemRepository.findById(id).orElse(null);
+        if (item != null) {
             item.setIsDeleted(true);
             itemRepository.save(item);
         }
         return item;
+    }
+
+    @Override
+    public List<Item> getAllItems() {
+        return itemRepository.findAll();
     }
 }

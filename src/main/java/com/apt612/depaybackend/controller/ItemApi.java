@@ -5,12 +5,24 @@ import com.apt612.depaybackend.service.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@RequestMapping("/item")
+@RequestMapping("/items")
 @CrossOrigin
 public class ItemApi {
-    @Autowired
     ItemService itemService;
+
+    @Autowired
+    public ItemApi(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    @GetMapping()
+    public List<Item> getAllItems() {
+        return itemService.getAllItems();
+    }
 
     @GetMapping("/{id}")
     public Item getItemById(@PathVariable("id") String id) {
@@ -23,5 +35,7 @@ public class ItemApi {
     }
 
     @DeleteMapping("/{id}")
-    public Item delete(@PathVariable("id") String id){return itemService.delete(id);}
+    public Item delete(@PathVariable("id") String id) {
+        return itemService.delete(id);
+    }
 }

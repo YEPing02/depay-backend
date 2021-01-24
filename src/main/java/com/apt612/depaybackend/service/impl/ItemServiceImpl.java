@@ -6,6 +6,9 @@ import com.apt612.depaybackend.dao.ItemDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ItemServiceImpl implements ItemService {
     @Autowired
@@ -23,4 +26,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public  Item delete(String id){return itemDao.deleteItem(id);}
+
+    @Override
+    public List<Item> getAllItems() {
+        return itemDao.getAllItems();
+    }
 }

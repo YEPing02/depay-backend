@@ -21,5 +21,10 @@ public class UserDaoImpl implements UserDao {
         return userRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public boolean isUniqueName(String name) {
+       return userRepository.findByPseudo(name).size()==0;
+    }
+
 
 }

@@ -20,4 +20,9 @@ public class UserServiceImpl implements UserService {
     public User getUserById(String id) {
         return userDao.getUserById(id);
     }
+
+    @Override
+    public Boolean isUniquePseudo(String pseudo) {
+        return  userDao.isUniqueName(pseudo);
+    }
 }

@@ -10,4 +10,5 @@ public class User {
     String email;
     String phone;
     String zone;
+    String password;
 }

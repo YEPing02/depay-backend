@@ -17,4 +17,7 @@ public class UserApi {
 
     @PostMapping
     public User createUser(@RequestBody User user ){return userService.create(user);}
+
+    @GetMapping("/unique/{pseudo}")
+    public  boolean isUniquePseudo(@PathVariable("pseudo") String pseudo) {return userService.isUniquePseudo(pseudo);}
 }

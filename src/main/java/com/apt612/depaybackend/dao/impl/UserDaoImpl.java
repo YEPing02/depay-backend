@@ -8,8 +8,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserDaoImpl implements UserDao {
-    @Autowired
+
     UserRepository userRepository;
+
+    @Autowired
+    public UserDaoImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User create(User user) {
@@ -19,6 +24,11 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User getUserById(String id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public User getUserByUsernameAndPassword(String username, String password) {
+        return userRepository.getByPseudoAndPassword(username, password);
     }
 
 

@@ -8,8 +8,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
+
     UserDao userDao;
+@Autowired
+    public UserServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public User create(User user) {
@@ -19,5 +23,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(String id) {
         return userDao.getUserById(id);
+    }
+
+    @Override
+    public User login(String username, String password) {
+        return userDao.getUserByUsernameAndPassword(username,password);
     }
 }

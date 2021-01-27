@@ -1,7 +1,9 @@
 package com.apt612.depaybackend.controller;
 
+import com.apt612.depaybackend.controller.dto.UserAuthentication;
 import com.apt612.depaybackend.controller.dto.UserDto;
 import com.apt612.depaybackend.controller.security.authentification.TokenUtils;
+import com.apt612.depaybackend.exception.PseudoDupliException;
 import com.apt612.depaybackend.model.User;
 import com.apt612.depaybackend.service.UserService;
 import com.github.dozermapper.core.Mapper;
@@ -25,8 +27,8 @@ public class UserApi {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto> signIn(@RequestParam String username, @RequestParam String password) {
-        User user = userService.login(username, password);
+    public ResponseEntity<UserDto> signIn(@RequestBody UserAuthentication userAuthentication) {
+        User user = userService.login(userAuthentication.getUsername(), userAuthentication.getPassword());
         if (user != null) {
             UserDto userDto = new UserDto();
             String token = TokenUtils.getToken(user);
@@ -39,10 +41,23 @@ public class UserApi {
     }
 
     @PostMapping
-    public UserDto createUser(@RequestBody User user) {
-        User userCreated = userService.create(user);
-        UserDto userDto = new UserDto();
-        mapper.map(userCreated, userDto);
-        return userDto;
+    public ResponseEntity<UserDto> createUser(@RequestBody User user) {
+        try {
+            User userCreated = userService.create(user);
+            if (userCreated != null) {
+                UserDto userDto = new UserDto();
+                mapper.map(user, userDto);
+                return new ResponseEntity(userDto, HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+        } catch (PseudoDupliException pde) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/unique")
+    public boolean isUniquePseudo(@RequestParam("pseudo") String pseudo) {
+        return userService.isUniquePseudo(pseudo);
     }
 }

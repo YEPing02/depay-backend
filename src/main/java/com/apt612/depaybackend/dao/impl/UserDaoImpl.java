@@ -31,5 +31,8 @@ public class UserDaoImpl implements UserDao {
         return userRepository.getByPseudoAndPassword(username, password);
     }
 
+    public boolean isUniqueName(String name) {
+        return userRepository.findByPseudo(name).size() == 0;
+    }
 
 }

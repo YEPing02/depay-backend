@@ -1,6 +1,7 @@
 package com.apt612.depaybackend.service.impl;
 
 import com.apt612.depaybackend.dao.UserDao;
+import com.apt612.depaybackend.exception.PseudoDupliException;
 import com.apt612.depaybackend.model.User;
 import com.apt612.depaybackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +11,18 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     UserDao userDao;
-@Autowired
+
+    @Autowired
     public UserServiceImpl(UserDao userDao) {
         this.userDao = userDao;
     }
 
     @Override
-    public User create(User user) {
-       return userDao.create(user);
+    public User create(User user) throws PseudoDupliException {
+        if (user.getPseudo().equals("") || user.getPassword().equals("") || !isUniquePseudo(user.getPseudo())) {
+            throw new PseudoDupliException(user.getPseudo());
+        }
+        return userDao.create(user);
     }
 
     @Override
@@ -27,6 +32,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(String username, String password) {
-        return userDao.getUserByUsernameAndPassword(username,password);
+        return userDao.getUserByUsernameAndPassword(username, password);
+    }
+
+    public Boolean isUniquePseudo(String pseudo) {
+        return userDao.isUniqueName(pseudo);
     }
 }

@@ -2,6 +2,7 @@ package com.apt612.depaybackend.controller;
 
 import com.apt612.depaybackend.controller.dto.UserAuthentication;
 import com.apt612.depaybackend.controller.dto.UserDto;
+import com.apt612.depaybackend.controller.security.annotations.Authenticated;
 import com.apt612.depaybackend.controller.security.authentification.TokenUtils;
 import com.apt612.depaybackend.exception.PseudoDupliException;
 import com.apt612.depaybackend.model.User;
@@ -107,4 +108,18 @@ public class UserApi {
     public boolean isUniquePseudo(@RequestParam("pseudo") String pseudo) {
         return userService.isUniquePseudo(pseudo);
     }
+
+    @GetMapping("/detail")
+    @Authenticated
+    public ResponseEntity<UserDto> getUser(@RequestHeader("Token") String token) {
+        String userId = TokenUtils.getAudience(token);
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            UserDto userDto = new UserDto();
+            mapper.map(user, userDto);
+            return new ResponseEntity(userDto, HttpStatus.CREATED);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
 }

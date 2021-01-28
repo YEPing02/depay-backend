@@ -11,4 +11,5 @@ public class User {
     String phone;
     String zone;
     String password;
+    String refreshToken;
 }

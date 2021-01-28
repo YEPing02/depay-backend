@@ -12,19 +12,38 @@ import java.util.Date;
 
 public class TokenUtils {
     public static String getToken(User user) {
-        return JWT.create().withExpiresAt(
-                new Date(System.currentTimeMillis() + Constants.EXPIRE_TIME)).withAudience(user.getId())
+        return JWT.create()
+                .withExpiresAt(new Date(System.currentTimeMillis() + Constants.ACCESS_TOKEN_EXPIRE_TIME))
+                .withAudience(user.getId())
+                .sign(Algorithm.HMAC256(Constants.SECRET));
+    }
+    public static String getRefreshToken(User user) {
+        return JWT.create()
+                .withExpiresAt(new Date(System.currentTimeMillis() + Constants.REFRESH_TOKEN_EXPIRE_TIME))
+                .withAudience(user.getId())
                 .sign(Algorithm.HMAC256(Constants.SECRET));
     }
 
-    public static boolean verifyAuthen(String token){
-        try{
-            Algorithm algorithm=Algorithm.HMAC256(Constants.SECRET);
-            JWTVerifier jwtVerifier=JWT.require(algorithm).build();
-            DecodedJWT decodedJWT=jwtVerifier.verify(token);
+    public static String getAudience(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(Constants.SECRET);
+            JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = jwtVerifier.verify(token);
+            return decodedJWT.getAudience().get(0);
+        } catch (JWTVerificationException jwtVerificationException) {
+            return "";
+        }
+    }
+
+
+    public static boolean verifyAuth(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(Constants.SECRET);
+            JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = jwtVerifier.verify(token);
             return true;
-        }catch (JWTVerificationException jwtVerificationException){
-            jwtVerificationException.printStackTrace();
+        } catch (JWTVerificationException jwtVerificationException) {
+            System.err.println(jwtVerificationException.getMessage());
             return false;
         }
     }

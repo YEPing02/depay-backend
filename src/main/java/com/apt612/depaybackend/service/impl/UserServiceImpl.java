@@ -38,4 +38,9 @@ public class UserServiceImpl implements UserService {
     public Boolean isUniquePseudo(String pseudo) {
         return userDao.isUniqueName(pseudo);
     }
+
+    @Override
+    public User update(User user) {
+        return userDao.update(user);
+    }
 }

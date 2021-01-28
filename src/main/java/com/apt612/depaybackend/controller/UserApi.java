@@ -32,10 +32,57 @@ public class UserApi {
         if (user != null) {
             UserDto userDto = new UserDto();
             String token = TokenUtils.getToken(user);
+            String refreshToken = TokenUtils.getRefreshToken(user);
             mapper.map(user, userDto);
             HttpHeaders headers = new HttpHeaders();
-            headers.add("token", token);
+            headers.add("Token", token);
+            headers.add("Refresh", refreshToken);
+            headers.add("Access-Control-Expose-Headers", "Token");
+            headers.add("Access-Control-Allow-Credentials", "Token");
+            headers.add("Access-Control-Expose-Headers", "Refresh");
+            headers.add("Access-Control-Allow-Credentials", "Refresh");
             return new ResponseEntity(userDto, headers, HttpStatus.CREATED);
+        }
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<UserDto> refresh(@RequestHeader("Token") String token, @RequestHeader("Refresh") String refresh) {
+        // find refresh token
+        String userId = TokenUtils.getAudience(refresh);
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            if (TokenUtils.verifyAuth(refresh)) {
+                // refresh refresh token
+                String newRefresh = TokenUtils.getRefreshToken(user);
+                user.setRefreshToken(newRefresh);
+                userService.update(user);
+                // refresh token
+                String newToken = TokenUtils.getToken(user);
+                UserDto userDto = new UserDto();
+                mapper.map(user, userDto);
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Token", newToken);
+                headers.add("Refresh", newRefresh);
+                headers.add("Access-Control-Expose-Headers", "Token");
+                headers.add("Access-Control-Allow-Credentials", "Token");
+                headers.add("Access-Control-Expose-Headers", "Refresh");
+                headers.add("Access-Control-Allow-Credentials", "Refresh");
+                return new ResponseEntity(userDto, headers, HttpStatus.CREATED);
+            }
+        }
+        return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> signOut(@RequestHeader("Token") String token) {
+        // disable refresh token
+        String userId = TokenUtils.getAudience(token);
+        User user = userService.getUserById(userId);
+        if (user != null) {
+            user.setRefreshToken("");
+            userService.update(user);
+            return new ResponseEntity(HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.UNAUTHORIZED);
     }

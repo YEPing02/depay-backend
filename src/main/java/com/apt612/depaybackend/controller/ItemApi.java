@@ -30,6 +30,7 @@ public class ItemApi {
     }
 
     @GetMapping()
+    @Authenticated
     public ResponseEntity<List<ItemDto>> getAllItems() {
         List<Item> itemList = itemService.getAllItems();
         List<ItemDto> itemDtoList = new ArrayList<>();

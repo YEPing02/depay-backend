@@ -9,5 +9,5 @@ public interface UserService {
     User getUserById(String id);
     User login(String username, String password);
     Boolean isUniquePseudo (String pseudo);
-
+    User update(User user);
 }

@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class AuthenticationInterceptor implements HandlerInterceptor {
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        System.out.println("AuthenticationInterceptor");
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if (noAuthenticationRequired(handler)) {
             return true;
         }
@@ -33,9 +32,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             if (authenticated == null) {
                 authenticated = handlerMethod.getMethod().getDeclaringClass().getAnnotation(Authenticated.class);
             }
-            if (authenticated != null) {
-                return false;
-            }
+            return authenticated == null;
         }
         return true;
     }

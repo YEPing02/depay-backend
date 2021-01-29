@@ -4,6 +4,7 @@ import com.apt612.depaybackend.controller.dto.UserAuthentication;
 import com.apt612.depaybackend.controller.dto.UserDto;
 import com.apt612.depaybackend.controller.security.annotations.Authenticated;
 import com.apt612.depaybackend.controller.security.authentification.TokenUtils;
+import com.apt612.depaybackend.exception.InvalidDataException;
 import com.apt612.depaybackend.exception.PseudoDupliException;
 import com.apt612.depaybackend.model.User;
 import com.apt612.depaybackend.service.UserService;
@@ -96,7 +97,7 @@ public class UserApi {
             } else {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
             }
-        } catch (PseudoDupliException pde) {
+        } catch (PseudoDupliException | InvalidDataException e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }

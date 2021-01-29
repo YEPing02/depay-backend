@@ -1,0 +1,25 @@
+<<<<<<< HEAD
+package com.apt612.depaybackend.service;
+
+import com.apt612.depaybackend.model.User;
+
+
+public interface UserService {
+    User create(User user);
+    User getUserById(String id);
+    User login(String username, String password);
+}
+=======
+package com.apt612.depaybackend.service;
+
+import com.apt612.depaybackend.exception.PseudoDupliException;
+import com.apt612.depaybackend.model.User;
+
+
+public interface UserService {
+    User create(User user) throws PseudoDupliException;
+    User getUserById(String id);
+    Boolean isUniquePseudo (String pseudo);
+
+}
+>>>>>>> fa4486ec52344190e10c0989b31b8d1d51a73969

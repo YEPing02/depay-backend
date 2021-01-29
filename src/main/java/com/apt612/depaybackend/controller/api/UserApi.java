@@ -1,4 +1,4 @@
-package com.apt612.depaybackend.controller;
+package com.apt612.depaybackend.controller.api;
 
 import com.apt612.depaybackend.controller.dto.UserAuthentication;
 import com.apt612.depaybackend.controller.dto.UserDto;
@@ -31,10 +31,9 @@ public class UserApi {
     public ResponseEntity<UserDto> signIn(@RequestBody UserAuthentication userAuthentication) {
         User user = userService.login(userAuthentication.getUsername(), userAuthentication.getPassword());
         if (user != null) {
-            UserDto userDto = new UserDto();
             String token = TokenUtils.getToken(user);
             String refreshToken = TokenUtils.getRefreshToken(user);
-            mapper.map(user, userDto);
+            UserDto userDto = mapper.map(user, UserDto.class);
             HttpHeaders headers = new HttpHeaders();
             headers.add("Token", token);
             headers.add("Refresh", refreshToken);
@@ -60,8 +59,7 @@ public class UserApi {
                 userService.update(user);
                 // refresh token
                 String newToken = TokenUtils.getToken(user);
-                UserDto userDto = new UserDto();
-                mapper.map(user, userDto);
+                UserDto userDto = mapper.map(user, UserDto.class);
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("Token", newToken);
                 headers.add("Refresh", newRefresh);
@@ -93,8 +91,7 @@ public class UserApi {
         try {
             User userCreated = userService.create(user);
             if (userCreated != null) {
-                UserDto userDto = new UserDto();
-                mapper.map(user, userDto);
+                UserDto userDto = mapper.map(user, UserDto.class);
                 return new ResponseEntity(userDto, HttpStatus.CREATED);
             } else {
                 return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -115,11 +112,9 @@ public class UserApi {
         String userId = TokenUtils.getAudience(token);
         User user = userService.getUserById(userId);
         if (user != null) {
-            UserDto userDto = new UserDto();
-            mapper.map(user, userDto);
+            UserDto userDto = mapper.map(user, UserDto.class);
             return new ResponseEntity(userDto, HttpStatus.CREATED);
         }
         return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
-
 }

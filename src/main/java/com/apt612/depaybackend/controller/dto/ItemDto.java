@@ -11,5 +11,4 @@ public class ItemDto extends RepresentationModel<ItemDto> {
     Date uploadTime;
     String userId;
     String pseudo;
-    Boolean isDeleted= false;
 }

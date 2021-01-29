@@ -1,5 +1,6 @@
-package com.apt612.depaybackend.controller;
+package com.apt612.depaybackend.controller.api;
 
+import com.apt612.depaybackend.controller.dto.MapperUtils;
 import com.apt612.depaybackend.controller.security.annotations.Authenticated;
 import com.apt612.depaybackend.controller.dto.ItemDto;
 import com.apt612.depaybackend.model.Item;
@@ -19,29 +20,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/items")
 @CrossOrigin
-public class ItemApi {
+public class ItemApi extends BaseApi {
     ItemService itemService;
-    Mapper mapper;
 
-    @Autowired
-    public ItemApi(ItemService itemService, Mapper mapper) {
+    public ItemApi(Mapper mapper, ItemService itemService) {
+        super(mapper);
         this.itemService = itemService;
-        this.mapper = mapper;
     }
 
     @GetMapping()
     @Authenticated
     public ResponseEntity<List<ItemDto>> getAllItems() {
         List<Item> itemList = itemService.getAllItems();
-        List<ItemDto> itemDtoList = new ArrayList<>();
-
-        for (Item item : itemList
-        ) {
-            ItemDto itemDto = new ItemDto();
-            mapper.map(item, itemDto);
-            itemDto.add(linkTo(methodOn(ItemApi.class).getItemById(itemDto.getId())).withSelfRel());
-            itemDtoList.add(itemDto);
-        }
+        List<ItemDto> itemDtoList = mapList(itemList, ItemDto.class);
         return new ResponseEntity(itemDtoList, HttpStatus.OK);
     }
 
@@ -50,8 +41,7 @@ public class ItemApi {
     public ResponseEntity<ItemDto> getItemById(@PathVariable("id") String id) {
         Item item = itemService.getItemById(id);
         if (item != null) {
-            ItemDto itemDto = new ItemDto();
-            mapper.map(item, itemDto);
+            ItemDto itemDto = mapper.map(item, ItemDto.class);
             return new ResponseEntity(itemDto, HttpStatus.OK);
         }
         return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -59,13 +49,22 @@ public class ItemApi {
 
     @PostMapping
     @Authenticated
-    public Item create(@RequestBody Item item) {
-        return itemService.create(item);
+    public ResponseEntity<ItemDto> create(@RequestBody Item item) {
+        Item itemCreated = itemService.create(item);
+        if (itemCreated != null) {
+            ItemDto itemDto = map(item, ItemDto.class);
+            return new ResponseEntity<>(itemDto, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{id}")
     @Authenticated
-    public Item delete(@PathVariable("id") String id) {
-        return itemService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
+        Item item = itemService.delete(id);
+        if (item.getIsDeleted()) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(HttpStatus.BAD_REQUEST);
     }
 }

@@ -41,6 +41,6 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public List<Item> getAllItems() {
-        return itemRepository.findAll();
+        return itemRepository.getByIsDeleted(false);
     }
 }

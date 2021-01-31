@@ -14,6 +14,7 @@ public class Item {
     Date uploadTime;
     String userId;
     String pseudo;
+    String[] photoIDList;
     @Field
     Boolean isDeleted= false;
 }

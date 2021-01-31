@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 @CrossOrigin
 public class UserApi {
     UserService userService;
@@ -107,11 +107,22 @@ public class UserApi {
         return userService.isUniquePseudo(pseudo);
     }
 
-    @GetMapping("/detail")
+    @GetMapping("/{id}")
     @Authenticated
-    public ResponseEntity<UserDto> getUser(@RequestHeader("Token") String token) {
-        String userId = TokenUtils.getAudience(token);
+    public ResponseEntity<UserDto> getUser( @PathVariable("id") String userId) {
         User user = userService.getUserById(userId);
+        if (user != null) {
+            UserDto userDto = mapper.map(user, UserDto.class);
+            return new ResponseEntity(userDto, HttpStatus.CREATED);
+        }
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/self")
+    @Authenticated
+    public ResponseEntity<UserDto> getSelfUser(@RequestHeader("Token") String token) {
+        String otherUserId = TokenUtils.getAudience(token);
+        User user = userService.getUserById(otherUserId);
         if (user != null) {
             UserDto userDto = mapper.map(user, UserDto.class);
             return new ResponseEntity(userDto, HttpStatus.CREATED);

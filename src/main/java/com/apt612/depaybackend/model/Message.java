@@ -8,9 +8,11 @@ import java.util.Date;
 public class Message {
     String id;
     String receiverId;
+    String receiverPseudo;
     String senderId;
+    String senderPseudo;
     Date timestamp;
     String itemId;
-    String context;
-    boolean read;
+    String content;
+    boolean read=false;
 }

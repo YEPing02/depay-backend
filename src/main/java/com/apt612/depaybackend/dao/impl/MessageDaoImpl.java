@@ -38,11 +38,23 @@ public class MessageDaoImpl implements MessageDao {
     public List<Message> getSortedConversation(String userId1, String userId2) {
         List<Message> conversation = new ArrayList<>();
         List<Message> messages1 = messageRepository.getByReceiverIdAndSenderId(userId1, userId2);
-        List<Message> messages2 = messageRepository.getByReceiverIdAndSenderId(userId2, userId2);
+        List<Message> messages2 = messageRepository.getByReceiverIdAndSenderId(userId2, userId1);
         conversation.addAll(messages1);
         conversation.addAll(messages2);
         conversation.sort(Comparator.comparing(Message::getTimestamp));
         return conversation;
+    }
+
+    @Override
+    public List<Message> getByReceiverId(String userId) {
+        List<Message> messageList = messageRepository.getByReceiverId(userId);
+        return messageList;
+    }
+
+    @Override
+    public List<Message> getBySenderId(String userId) {
+        List<Message> messageList = messageRepository.getBySenderId(userId);
+        return messageList;
     }
 
     @Override

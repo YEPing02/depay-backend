@@ -1,6 +1,5 @@
 package com.apt612.depaybackend.controller.api;
 
-import com.apt612.depaybackend.controller.dto.MapperUtils;
 import com.apt612.depaybackend.controller.dto.MessageDto;
 import com.apt612.depaybackend.controller.security.annotations.Authenticated;
 import com.apt612.depaybackend.model.Message;
@@ -10,11 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{userId}/message")
-public class MessageApi extends BaseApi{
+@RequestMapping("users/{userId}/messages")
+@Authenticated
+@CrossOrigin
+public class MessageApi extends BaseApi {
     MessageService messageService;
 
     @Autowired
@@ -37,6 +40,7 @@ public class MessageApi extends BaseApi{
     @PostMapping
     @Authenticated
     public ResponseEntity<MessageDto> createMessage(@RequestBody Message message) {
+        message.setTimestamp(new Date());
         Message messageCreated = messageService.createMessage(message);
         if (messageCreated != null) {
             MessageDto messageDto = map(messageCreated, MessageDto.class);
@@ -45,24 +49,27 @@ public class MessageApi extends BaseApi{
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-    @GetMapping
-    @Authenticated
-    public ResponseEntity<List<MessageDto>> getMessagesByReceiver(@PathVariable(required = true) String userId) {
-        List<Message> messageList = messageService.getMessagesByReceiver(userId);
-        List<MessageDto> messageDtoList = mapList(messageList, MessageDto.class);
-        return new ResponseEntity<>(messageDtoList, HttpStatus.OK);
-    }
 
     @GetMapping("/unread")
+    @Authenticated
     public ResponseEntity<Integer> getUnreadNumberByUserId(@PathVariable() String userId) {
         Integer unread = messageService.getUnreadNumberByUserId(userId);
         return new ResponseEntity<>(unread, HttpStatus.OK);
     }
 
-    @GetMapping("/conversion/{objectUserId}")
-    public ResponseEntity<List<MessageDto>> getSortedConversation(@PathVariable String userId, @PathVariable String objectUserId) {
-        List<Message> messageList = messageService.getSortedConversation(userId, objectUserId);
+    @GetMapping("/last")
+    @Authenticated
+    public ResponseEntity<List<MessageDto>> getLastMessages(@PathVariable String userId) {
+        List<Message> messageList = messageService.getLastMessages(userId);
         List<MessageDto> messageDtoList = mapList(messageList, MessageDto.class);
-        return new ResponseEntity<>(messageDtoList, HttpStatus.OK);
+        return new ResponseEntity(messageDtoList, HttpStatus.OK);
+    }
+
+    @GetMapping("/conversation/{receiverId}")
+    @Authenticated
+    public ResponseEntity<List<MessageDto>> getConversation(@PathVariable String userId, @PathVariable String receiverId) {
+        List<Message> messageList = messageService.getConversation(userId, receiverId);
+        List<MessageDto> messageDtoList = mapList(messageList, MessageDto.class);
+        return new ResponseEntity(messageDtoList, HttpStatus.OK);
     }
 }

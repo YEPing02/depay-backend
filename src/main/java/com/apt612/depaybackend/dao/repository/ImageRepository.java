@@ -8,7 +8,9 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.List;
 
 public interface ImageRepository extends MongoRepository<Image, String> {
-    @Query(value="{'itemID':?0}")
-    List<Image> getImagesByItemId(String itemId);
-    Image getOneImageByItemId(String itemId);
+    //@Query(value="{'itemID':?0}")
+    //List<Image> getImagesByItemId(String itemId);
+
+    List<Image> getByItemId(String itemId);
+
 }

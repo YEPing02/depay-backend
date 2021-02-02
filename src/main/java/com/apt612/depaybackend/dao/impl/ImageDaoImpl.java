@@ -20,11 +20,11 @@ public class ImageDaoImpl implements ImageDao {
 
     @Override
     public Image getOneImageByItemId(String itemId) {
-        return imageRepository.getOneImageByItemId(itemId);
+        return  this.getImagesByItemId(itemId).get(0);
     }
 
     @Override
     public List<Image> getImagesByItemId(String itemId) {
-        return imageRepository.getImagesByItemId(itemId);
+        return imageRepository.getByItemId(itemId);
     }
 }

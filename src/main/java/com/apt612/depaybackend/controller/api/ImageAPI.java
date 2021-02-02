@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,14 +27,25 @@ public class ImageAPI {
 
     @GetMapping
     @Authenticated
-    public  ResponseEntity<List<Image>> getImagesOfItem(@PathVariable("itemId") String itemId){
-        return new ResponseEntity<List<Image>>(imageService.getImagesByItemId(itemId),HttpStatus.FOUND);
+    public  ResponseEntity<List<String>> getImagesOfItem(@PathVariable("itemId") String itemId){
+        List<Image> images = imageService.getImagesByItemId(itemId);
+
+        if(images.size()==0){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+       }
+
+        List<String> rsl = new ArrayList<String>() ;
+        for (Image image : images){
+            rsl.add(image.getImageBase64());
+        }
+
+        return new ResponseEntity<List<String>>(rsl,HttpStatus.OK);
     }
 
-    @GetMapping(value = "/first")
+    @GetMapping(value = "/first",produces = "text/plain")
     public  ResponseEntity<String> getFirstImageOfItem(@PathVariable("itemId") String itemId) {
        Image image = imageService.getOneImageByItemId(itemId);
-       if(image != null) return new ResponseEntity<String>(image.getImageBase64(), HttpStatus.FOUND);
+       if(image != null) return new ResponseEntity<String>(image.getImageBase64(), HttpStatus.OK);
 
        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }

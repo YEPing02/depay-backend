@@ -19,8 +19,8 @@ public class ImageDaoImpl implements ImageDao {
     }
 
     @Override
-    public Image getOneImageByItemId(String itemId) {
-        return  this.getImagesByItemId(itemId).get(0);
+    public Image getFirstImageByItemId(String itemId) {
+        return  imageRepository.getFirstByItemId(itemId);
     }
 
     @Override

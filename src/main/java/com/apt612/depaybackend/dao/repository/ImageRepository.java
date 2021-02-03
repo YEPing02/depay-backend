@@ -12,5 +12,5 @@ public interface ImageRepository extends MongoRepository<Image, String> {
     //List<Image> getImagesByItemId(String itemId);
 
     List<Image> getByItemId(String itemId);
-
+    Image getFirstByItemId(String itemId);
 }

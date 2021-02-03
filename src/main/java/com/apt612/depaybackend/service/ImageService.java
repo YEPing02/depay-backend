@@ -8,5 +8,5 @@ import java.util.List;
 public interface ImageService {
     Image add(Image image);
     List<Image> getImagesByItemId(String itemId);
-    Image getOneImageByItemId(String itemId);
+    Image getCoverImageByItemId(String itemId);
 }

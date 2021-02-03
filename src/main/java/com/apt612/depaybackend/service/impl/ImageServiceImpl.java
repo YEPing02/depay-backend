@@ -19,8 +19,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image getOneImageByItemId(String id) {
-        return imageDao.getOneImageByItemId(id);
+    public Image getCoverImageByItemId(String id) {
+        return imageDao.getFirstImageByItemId(id);
     }
 
     @Override

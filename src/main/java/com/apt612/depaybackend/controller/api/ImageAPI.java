@@ -44,7 +44,7 @@ public class ImageAPI {
 
     @GetMapping(value = "/first",produces = "text/plain")
     public  ResponseEntity<String> getFirstImageOfItem(@PathVariable("itemId") String itemId) {
-       Image image = imageService.getOneImageByItemId(itemId);
+       Image image = imageService.getCoverImageByItemId(itemId);
        if(image != null) return new ResponseEntity<String>(image.getImageBase64(), HttpStatus.OK);
 
        return new ResponseEntity(HttpStatus.NOT_FOUND);

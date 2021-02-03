@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ImageDao {
     Image add(Image image);
-    Image getOneImageByItemId(String itemId);
+    Image getFirstImageByItemId(String itemId);
     List<Image> getImagesByItemId(String itemId);
 }

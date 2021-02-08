@@ -3,8 +3,8 @@ package com.apt612.depaybackend.service.impl;
 import com.apt612.depaybackend.dao.MessageDao;
 import com.apt612.depaybackend.model.Message;
 import com.apt612.depaybackend.service.MessageService;
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -13,10 +13,14 @@ import java.util.*;
 public class MessageServiceImpl implements MessageService {
     MessageDao messageDao;
 
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     @Autowired
-    public MessageServiceImpl(MessageDao messageDao) {
+    public MessageServiceImpl(MessageDao messageDao, SimpMessagingTemplate simpMessagingTemplate) {
         this.messageDao = messageDao;
+        this.simpMessagingTemplate = simpMessagingTemplate;
     }
+
 
     @Override
     public Message getMessageById(String id) {
@@ -25,12 +29,9 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public Message createMessage(Message message) {
-        return messageDao.createMessage(message);
-    }
-
-    @Override
-    public List<Message> getMessagesByReceiver(String userId) {
-        return messageDao.getMessagesByReceiver(userId);
+        Message messageCreated = messageDao.createMessage(message);
+        sendWebsocketMessage(messageCreated);
+        return messageCreated;
     }
 
     @Override
@@ -61,20 +62,6 @@ public class MessageServiceImpl implements MessageService {
         return messageDao.getSortedConversation(userId1, userId2);
     }
 
-    private boolean isInSameConversation(Message m1, Message m2) {
-        boolean res = false;
-        String sm1 = m1.getSenderId();
-        String sm2 = m2.getSenderId();
-        String rm1 = m1.getReceiverId();
-        String rm2 = m1.getReceiverId();
-        if ((sm1.equals(sm2) && rm1.equals(rm2))
-                || ((sm1.equals(rm2) && rm1.equals(sm2)))) {
-            res = true;
-        }
-        return res;
-
-    }
-
     private List<Message> conversationsToLastMessages(Map<String, List<Message>> conversation) {
         List<Message> messageList = new ArrayList<>();
         for (Map.Entry<String, List<Message>> e : conversation.entrySet()) {
@@ -83,5 +70,13 @@ public class MessageServiceImpl implements MessageService {
             messageList.add(oneConversation.get(oneConversation.size() - 1));
         }
         return messageList;
+    }
+
+
+    private void sendWebsocketMessage(Message message) {
+        if (message != null) {
+            String objectUserId = message.getReceiverId();
+            this.simpMessagingTemplate.convertAndSend( "/queue/private/"+objectUserId, message);
+        }
     }
 }
